@@ -36,14 +36,20 @@ export default function Request_form() {
       endDate: formData.endDate?.format("YYYY-MM-DD"),
       lastNonStandardMonth: formData.lastNonStandardMonth?.format("YYYY-MM"),
       numWfhDays: Number(formData.numWfhDays),
-      approved: false, // ✅ new field
+      approved: false,
     };
 
-    const res = await submitWFHRequest(submission);
+    const res = await submitWFHRequest(submission); // Your backend DB logic
 
     if (res.success) {
-      alert("✅ WFH request submitted successfully!");
-      console.log(res.data);
+      // ✅ Trigger email
+      await fetch("/api/sendEmail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission),
+      });
+
+      alert("✅ WFH request submitted and email sent to manager!");
     } else {
       alert(`❌ ${res.error}`);
     }
