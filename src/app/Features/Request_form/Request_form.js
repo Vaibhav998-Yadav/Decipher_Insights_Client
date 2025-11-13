@@ -1,23 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { TextField, Button, Box, Typography, Paper } from "@mui/material";
-import Grid from "@mui/material/Grid2"; // ✅ new Grid2 import
+import Grid from "@mui/material/Grid2";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { submitWFHRequest } from "@/app/api/request_form";
+import { AuthContext } from "@/context/AuthContext"; // ✅ import context
 
 export default function Request_form() {
+  const { userDetails } = useContext(AuthContext); // ✅ Access user details from context
+
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     startDate: null,
     endDate: null,
     lastNonStandardMonth: null,
     reason: "",
-    numWfhDays: "", // ✅ Added new field
+    numWfhDays: "",
   });
+
+  // ✅ Pre-fill user info once context loads
+  useEffect(() => {
+    if (userDetails) {
+      setFormData((prev) => ({
+        ...prev,
+        name: userDetails["name"] || "",
+        email: userDetails["email"] || "",
+      }));
+    }
+  }, [userDetails]);
 
   const handleChange = (field) => (event) => {
     setFormData((prev) => ({ ...prev, [field]: event.target.value }));
@@ -39,14 +54,18 @@ export default function Request_form() {
       approved: false,
     };
 
-    const res = await submitWFHRequest(submission); // Your backend DB logic
+    const res = await submitWFHRequest(submission);
+    console.log(res.data)
 
     if (res.success) {
-      // ✅ Trigger email
+      // ✅ Trigger email to manager
       await fetch("/api/sendEmail", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submission),
+        body: JSON.stringify({
+          ...submission,
+          id: res.data.data._id, // ✅ Pass MongoDB ID
+        }),
       });
 
       alert("✅ WFH request submitted and email sent to manager!");
@@ -87,7 +106,7 @@ export default function Request_form() {
             noValidate
             sx={{ display: "flex", flexDirection: "column", gap: 3 }}
           >
-            {/* Name */}
+            {/* ✅ Name (auto-filled & disabled) */}
             <TextField
               label="Name"
               variant="outlined"
@@ -95,6 +114,18 @@ export default function Request_form() {
               onChange={handleChange("name")}
               fullWidth
               required
+              disabled
+            />
+
+            {/* ✅ Email (auto-filled & disabled) */}
+            <TextField
+              label="Email"
+              variant="outlined"
+              value={formData.email}
+              onChange={handleChange("email")}
+              fullWidth
+              required
+              disabled
             />
 
             {/* Dates in a row */}
@@ -118,7 +149,7 @@ export default function Request_form() {
               </Grid>
             </Grid>
 
-            {/* Number of WFH Days Required */}
+            {/* Number of WFH Days */}
             <TextField
               label="Number of WFH Days Required"
               type="number"
@@ -128,7 +159,7 @@ export default function Request_form() {
               required
             />
 
-            {/* Last Non-Standard Month (Year + Month) */}
+            {/* Last Non-Standard Month */}
             <DatePicker
               label="Last Non-Standard WFH (Month & Year)"
               views={["year", "month"]}

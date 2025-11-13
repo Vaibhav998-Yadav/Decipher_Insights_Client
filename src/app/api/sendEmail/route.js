@@ -55,8 +55,7 @@ export async function POST(req) {
         </head>
         <body>
           <div class="container">
-            <h2>📝 New Form Submission</h2>
-            <p>Dear Manager,</p>
+            <h2>📝 New WFH request</h2>
             <p>A new form has been submitted and requires your review and approval:</p>
             <div class="details">
               <p><span class="label">Name:</span> ${submission.name || "N/A"}</p>
@@ -66,8 +65,8 @@ export async function POST(req) {
               <p><span class="label">Number of WFH Days:</span> ${submission.numWfhDays}</p>
             </div>
             <div class="actions">
-              <a href="${process.env.NEXT_PUBLIC_BASE_URL}/api/form/approve?id=${submission.id}" class="btn approve">✅ Approve</a>
-              <a href="${process.env.NEXT_PUBLIC_BASE_URL}/api/form/reject?id=${submission.id}" class="btn reject">❌ Reject</a>
+             <a href="${process.env.NEXT_PUBLIC_BASE_URL}api/wfh/approve/${submission.id}?approved=true" class="btn approve">✅ Approve</a>
+             <a href="${process.env.NEXT_PUBLIC_BASE_URL}api/wfh/approve/${submission.id}?approved=false" class="btn reject">❌ Reject</a>
             </div>
             <div class="footer">
               This is an automated email. Please do not reply directly.<br/>
@@ -90,11 +89,7 @@ export async function POST(req) {
     // ✅ Send the email
     await transporter.sendMail({
       from: `"Decipher Insights" <${process.env.EMAIL_USER}>`,
-      to: [
-        "luv.ratan@decipherfinancials.com",
-        "megha.punjabi@decipherfinancials.com",
-        "isha.joshi@decipherfinancials.com",
-      ],
+      to: ["luv.ratan@decipherfinancials.com", "luvratan.educonnect@gmail.com"],
       subject: "Form Submission - Approval Required",
       html: emailHtml,
     });
