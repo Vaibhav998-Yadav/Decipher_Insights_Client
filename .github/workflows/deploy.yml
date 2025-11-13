@@ -13,23 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Move into project folder
-        run: cd decipher_insights_client && ls
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: |
-          cd decipher_insights_client
-          npm install
+        run: npm install
 
       - name: Build Next.js project
-        run: |
-          cd decipher_insights_client
-          npm run build
+        run: npm run build
 
       - name: Copy build files to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -37,7 +30,12 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
-          source: "decipher_insights_client/.next/**, decipher_insights_client/public/**, decipher_insights_client/package.json, decipher_insights_client/package-lock.json, decipher_insights_client/ecosystem.config.js"
+          source: |
+            .next/**
+            public/**
+            package.json
+            package-lock.json
+            ecosystem.config.js
           target: "/var/www/decipher_insights_client/decipher_insights_client"
           overwrite: true
 
