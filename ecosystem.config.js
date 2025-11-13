@@ -4,7 +4,7 @@ module.exports = {
       name: "decipher_frontend",
       cwd: "/var/www/decipher_insights_frontend/current",
       script: "node_modules/next/dist/bin/next",
-      args: "start -p 3020",
+      args: "start -H 0.0.0.0 -p 3020",
       env: {
         NODE_ENV: "production"
       },
