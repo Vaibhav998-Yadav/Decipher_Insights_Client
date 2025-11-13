@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
@@ -24,19 +24,20 @@ jobs:
       - name: Build Next.js project
         run: npm run build
 
-      - name: Copy files to VPS
+      - name: Copy Build Files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           source: |
-            .next
+            .next/**
+            public/**
             package.json
             package-lock.json
             ecosystem.config.js
-            public
-          target: /var/www/decipher_insights_client/decipher_insights_client
+          target: "/var/www/decipher_insights_client/decipher_insights_client"
+          overwrite: true
 
       - name: Restart PM2 on VPS
         uses: appleboy/ssh-action@v1.0.3
