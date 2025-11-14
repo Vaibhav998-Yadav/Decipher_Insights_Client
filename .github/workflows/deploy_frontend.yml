@@ -19,14 +19,10 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: |
-          cd Decipher_Insights_Client
-          npm install
+        run: npm install
 
       - name: Build Next.js project
-        run: |
-          cd Decipher_Insights_Client
-          npm run build
+        run: npm run build
 
       - name: Copy build files to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -35,12 +31,12 @@ jobs:
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           source: |
-            Decipher_Insights_Client/.next/**
-            Decipher_Insights_Client/public/**
-            Decipher_Insights_Client/package.json
-            Decipher_Insights_Client/package-lock.json
-            Decipher_Insights_Client/ecosystem.config.js
-          target: "/var/www/decipher_insights_client/decipher_insights_client"
+            .next/**
+            public/**
+            package.json
+            package-lock.json
+            ecosystem.config.js
+          target: "/var/www/decipher_insights_client"
           overwrite: true
 
       - name: Restart PM2 on VPS
@@ -50,7 +46,7 @@ jobs:
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           script: |
-            cd /var/www/decipher_insights_client/decipher_insights_client
+            cd /var/www/decipher_insights_client
             npm install --omit=dev
             pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
             pm2 save

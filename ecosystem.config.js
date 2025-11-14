@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "decipher_frontend",
-      cwd: "/var/www/decipher_insights_client/decipher_insights_client",
+      cwd: "/var/www/decipher_insights_client",
       script: "node_modules/next/dist/bin/next",
       args: "start -H 0.0.0.0 -p 3020",
       env: {
