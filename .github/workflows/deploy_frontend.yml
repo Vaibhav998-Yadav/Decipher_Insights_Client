@@ -13,6 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug - Show Project Structure
+        run: |
+          echo "ROOT DIRECTORY:"
+          pwd
+          echo "FILES:"
+          ls -R
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -22,9 +29,13 @@ jobs:
         run: npm install
 
       - name: Build Next.js project
-        run: npm run build
+        run: |
+          npm run build
+          echo "--- BUILD DONE, CHECKING ---"
+          ls -lah
+          ls -lah .next || echo ".next does NOT exist"
 
-      - name: Copy build files to VPS
+      - name: Copy Build Files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
