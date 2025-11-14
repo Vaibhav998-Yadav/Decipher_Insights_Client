@@ -1,4 +1,4 @@
-name: Deploying Frontend to Hostinger VPS
+name: Deploy Frontend to Hostinger VPS
 
 on:
   push:
@@ -19,10 +19,14 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd Decipher_Insights_Client
+          npm install
 
       - name: Build Next.js project
-        run: npm run build
+        run: |
+          cd Decipher_Insights_Client
+          npm run build
 
       - name: Copy build files to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -31,11 +35,11 @@ jobs:
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           source: |
-            .next/**
-            public/**
-            package.json
-            package-lock.json
-            ecosystem.config.js
+            Decipher_Insights_Client/.next/**
+            Decipher_Insights_Client/public/**
+            Decipher_Insights_Client/package.json
+            Decipher_Insights_Client/package-lock.json
+            Decipher_Insights_Client/ecosystem.config.js
           target: "/var/www/decipher_insights_client/decipher_insights_client"
           overwrite: true
 
