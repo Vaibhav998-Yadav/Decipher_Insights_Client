@@ -13,11 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug - Show Project Structure
-        run: |
-          pwd
-          ls -R
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,11 +23,6 @@ jobs:
 
       - name: Build Next.js project
         run: npm run build
-
-      - name: Check Build Output
-        run: |
-          echo "Checking .next:"
-          ls -lah .next || echo ".next missing"
 
       - name: Compress build folder
         run: |
@@ -45,7 +35,8 @@ jobs:
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           source: "deploy.zip"
-          target: "/var/www/decipher_insights_client"
+          target: "/var/www/decipher_insights_client/"   # IMPORTANT SLASH
+          overwrite: true
 
       - name: Extract & deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -54,6 +45,8 @@ jobs:
           username: root
           key: ${{ secrets.HOSTINGER_FRONTEND_SSH_KEY }}
           script: |
+            apt update -y
+            apt install unzip -y
             cd /var/www/decipher_insights_client
             unzip -o deploy.zip
             rm deploy.zip
