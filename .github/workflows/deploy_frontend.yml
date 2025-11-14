@@ -8,16 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug - Show Project Structure
+      - name: Debug
         run: |
-          echo "ROOT DIRECTORY:"
+          echo "Workspace:"
           pwd
-          echo "FILES:"
           ls -R
 
       - name: Setup Node.js
@@ -29,13 +31,15 @@ jobs:
         run: npm install
 
       - name: Build Next.js project
-        run: |
-          npm run build
-          echo "--- BUILD DONE, CHECKING ---"
-          ls -lah
-          ls -lah .next || echo ".next does NOT exist"
+        run: npm run build
 
-      - name: Copy Build Files to VPS
+      - name: Check Build Output
+        run: |
+          echo "--- Checking .next folder ---"
+          ls -lah
+          ls -lah .next || echo "❌ .next NOT FOUND"
+
+      - name: Copy files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
