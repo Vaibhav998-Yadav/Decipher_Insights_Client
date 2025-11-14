@@ -8,17 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug
+      - name: Debug - Show Project Structure
         run: |
-          echo "Workspace:"
           pwd
           ls -R
 
@@ -35,11 +31,10 @@ jobs:
 
       - name: Check Build Output
         run: |
-          echo "--- Checking .next folder ---"
-          ls -lah
-          ls -lah .next || echo "❌ .next NOT FOUND"
+          echo "Checking .next:"
+          ls -lah .next || echo ".next missing"
 
-      - name: Copy files to VPS
+      - name: Copy Build Files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
