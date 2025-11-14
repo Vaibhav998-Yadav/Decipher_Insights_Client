@@ -1,4 +1,4 @@
-name: Deploy Frontend to Hostinger VPS
+name: Deploying Frontend to Hostinger VPS
 
 on:
   push:
